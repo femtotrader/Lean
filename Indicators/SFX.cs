@@ -91,16 +91,19 @@ namespace QuantConnect.Indicators
         /// <returns>The input is returned unmodified.</returns>
         protected override decimal ComputeNextValue(IBaseDataBar input)
         {
-            Console.WriteLine(input);
+            Console.WriteLine("{0} {1}", Samples, input);
 
-            /*
-             * this should be uncommented... but ComparatesAgainstExternalData... tests are passing! (even without this)
-             * 
             ATR.Update(input);
-            StdDev.Update(input);
+            StdDev.Update(input.Time, input.Close);
 
-            //MAStdDev.Update(input.Time, StdDev.Current.Value);
-            */
+            if (StdDev.IsReady) {
+                MAStdDev.Update(input.Time, StdDev.Current.Value);
+            } else
+            {
+                MAStdDev.Update(input.Time, 0m);
+            }
+
+            Console.WriteLine("{0} {1} {2}", ATR.Current.Value, StdDev.Current.Value, MAStdDev.Current.Value);
 
             return input.Value;
         }
